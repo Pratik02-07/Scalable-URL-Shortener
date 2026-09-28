@@ -7,8 +7,9 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     BASE_URL: str = "http://localhost:8000"
     
-    DATABASE_URL: str = "sqlite:///:memory:"
+    DATABASE_URL: str = "sqlite:///./url_shortener_dev.db"
     REDIS_URL: str = "redis://localhost:6379/0"
+    LOG_JSON: bool = False
     
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
