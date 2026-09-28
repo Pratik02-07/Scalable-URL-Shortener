@@ -1,0 +1,8 @@
+# Copy this file to terraform.tfvars (gitignored) and fill in real values.
+# NEVER commit terraform.tfvars to version control.
+
+project     = "url-shortener"
+environment = "dev"
+aws_region  = "ap-south-1"
+vpc_cidr    = "10.0.0.0/16"
+db_password = "CHANGE_ME_strong_password_here"
