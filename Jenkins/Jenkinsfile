@@ -1,0 +1,3 @@
+// Jenkins pipeline for URL Shortener project
+// The current deployment is done using GitHub Actions, so this pipeline is not used yet.
+// It is here for future use when we decide to move to Jenkins for deployment.

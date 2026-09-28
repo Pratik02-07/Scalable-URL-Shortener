@@ -1,0 +1,287 @@
+name: CD — Deploy to ECS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: dev
+        type: choice
+        options: [dev, prod]
+
+# Only one deployment at a time per environment
+concurrency:
+  group: cd-${{ github.ref }}-${{ inputs.environment || 'dev' }}
+  cancel-in-progress: false   # never cancel an in-flight deployment
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_BACKEND_REPO: url-shortener/backend
+  ECR_FRONTEND_REPO: url-shortener/frontend
+  ECS_CLUSTER: url-shortener-cluster
+  BACKEND_SERVICE: url-shortener-backend
+  FRONTEND_SERVICE: url-shortener-frontend
+  BACKEND_TASK_DEFINITION: url-shortener-backend
+  FRONTEND_TASK_DEFINITION: url-shortener-frontend
+  CONTAINER_BACKEND: backend
+  CONTAINER_FRONTEND: frontend
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Gate: CI must be green before CD runs
+  # ─────────────────────────────────────────────────────────────────────────
+  ci-gate:
+    name: Wait for CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify CI passed
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: "Backend — Lint & Test"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job: Build, tag, push backend image to ECR
+  # ─────────────────────────────────────────────────────────────────────────
+  push-backend:
+    name: Push Backend → ECR
+    runs-on: ubuntu-latest
+    needs: ci-gate
+    outputs:
+      image: ${{ steps.build-push.outputs.image }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag & push backend image
+        id: build-push
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          IMAGE=$ECR_REGISTRY/$ECR_BACKEND_REPO:$IMAGE_TAG
+          LATEST=$ECR_REGISTRY/$ECR_BACKEND_REPO:latest
+
+          docker buildx build \
+            --platform linux/amd64 \
+            --cache-from type=registry,ref=$LATEST \
+            --cache-to   type=inline \
+            --tag "$IMAGE" \
+            --tag "$LATEST" \
+            --push \
+            ./backend
+
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job: Build, tag, push frontend image to ECR
+  # ─────────────────────────────────────────────────────────────────────────
+  push-frontend:
+    name: Push Frontend → ECR
+    runs-on: ubuntu-latest
+    needs: ci-gate
+    outputs:
+      image: ${{ steps.build-push.outputs.image }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag & push frontend image
+        id: build-push
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          IMAGE=$ECR_REGISTRY/$ECR_FRONTEND_REPO:$IMAGE_TAG
+          LATEST=$ECR_REGISTRY/$ECR_FRONTEND_REPO:latest
+
+          docker buildx build \
+            --platform linux/amd64 \
+            --cache-from type=registry,ref=$LATEST \
+            --cache-to   type=inline \
+            --tag "$IMAGE" \
+            --tag "$LATEST" \
+            --push \
+            ./frontend
+
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job: Deploy backend to ECS Fargate
+  # ─────────────────────────────────────────────────────────────────────────
+  deploy-backend:
+    name: Deploy Backend → ECS
+    runs-on: ubuntu-latest
+    needs: push-backend
+    environment:
+      name: ${{ inputs.environment || 'dev' }}
+      url: ${{ steps.get-alb.outputs.url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition $BACKEND_TASK_DEFINITION \
+            --query taskDefinition \
+          > /tmp/backend-task-def.json
+
+      - name: Update image in task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: /tmp/backend-task-def.json
+          container-name: ${{ env.CONTAINER_BACKEND }}
+          image: ${{ needs.push-backend.outputs.image }}
+
+      - name: Deploy to ECS service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ env.BACKEND_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      - name: Get ALB URL for environment URL
+        id: get-alb
+        run: |
+          URL=$(aws elbv2 describe-load-balancers \
+            --query "LoadBalancers[?contains(LoadBalancerName,'url-shortener')].DNSName" \
+            --output text)
+          echo "url=http://$URL" >> "$GITHUB_OUTPUT"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job: Deploy frontend to ECS Fargate
+  # ─────────────────────────────────────────────────────────────────────────
+  deploy-frontend:
+    name: Deploy Frontend → ECS
+    runs-on: ubuntu-latest
+    needs: push-frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition $FRONTEND_TASK_DEFINITION \
+            --query taskDefinition \
+          > /tmp/frontend-task-def.json
+
+      - name: Update image in task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: /tmp/frontend-task-def.json
+          container-name: ${{ env.CONTAINER_FRONTEND }}
+          image: ${{ needs.push-frontend.outputs.image }}
+
+      - name: Deploy to ECS service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ env.FRONTEND_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job: Post-deployment smoke test
+  # ─────────────────────────────────────────────────────────────────────────
+  smoke-test:
+    name: Smoke Test
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
+    if: success()
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get ALB DNS
+        id: alb
+        run: |
+          ALB=$(aws elbv2 describe-load-balancers \
+            --query "LoadBalancers[?contains(LoadBalancerName,'url-shortener')].DNSName" \
+            --output text)
+          echo "dns=$ALB" >> "$GITHUB_OUTPUT"
+
+      - name: Health check — /health
+        run: |
+          for i in $(seq 1 10); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              http://${{ steps.alb.outputs.dns }}/health)
+            if [ "$STATUS" = "200" ]; then
+              echo "✓ Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i: got $STATUS — retrying in 10s…"
+            sleep 10
+          done
+          echo "✗ Health check failed after 10 attempts"
+          exit 1
+
+      - name: Smoke test — shorten a URL
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"url": "https://github.com"}' \
+            http://${{ steps.alb.outputs.dns }}/api/v1/shorten)
+          echo "$RESPONSE"
+          echo "$RESPONSE" | jq -e '.short_code' > /dev/null
+          echo "✓ Shorten endpoint is working"
