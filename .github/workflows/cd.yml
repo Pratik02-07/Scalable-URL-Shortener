@@ -21,11 +21,16 @@ env:
   AWS_REGION: ap-south-1
   ECR_BACKEND_REPO: url-shortener/backend
   ECR_FRONTEND_REPO: url-shortener/frontend
-  ECS_CLUSTER: url-shortener-cluster
-  BACKEND_SERVICE: url-shortener-backend
-  FRONTEND_SERVICE: url-shortener-frontend
-  BACKEND_TASK_DEFINITION: url-shortener-backend
-  FRONTEND_TASK_DEFINITION: url-shortener-frontend
+
+  # Must match Terraform's naming convention:
+  # local.name = "${var.project}-${var.environment}"
+  DEPLOY_ENV: ${{ inputs.environment || 'dev' }}
+  PROJECT_NAME: url-shortener
+  ECS_CLUSTER: ${{ format('{0}-{1}-cluster', 'url-shortener', inputs.environment || 'dev') }}
+  BACKEND_SERVICE: ${{ format('{0}-{1}-backend', 'url-shortener', inputs.environment || 'dev') }}
+  FRONTEND_SERVICE: ${{ format('{0}-{1}-frontend', 'url-shortener', inputs.environment || 'dev') }}
+  BACKEND_TASK_DEFINITION: ${{ format('{0}-{1}-backend', 'url-shortener', inputs.environment || 'dev') }}
+  FRONTEND_TASK_DEFINITION: ${{ format('{0}-{1}-frontend', 'url-shortener', inputs.environment || 'dev') }}
   CONTAINER_BACKEND: backend
   CONTAINER_FRONTEND: frontend
 
