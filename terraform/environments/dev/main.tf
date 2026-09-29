@@ -13,15 +13,7 @@ terraform {
     }
   }
 
-  # Remote state in S3 + DynamoDB lock table
-  # Uncomment once you create the S3 bucket and DynamoDB table manually first
-  # backend "s3" {
-  #   bucket         = "url-shortener-tf-state-<your-account-id>"
-  #   key            = "dev/terraform.tfstate"
-  #   region         = "ap-south-1"
-  #   dynamodb_table = "url-shortener-tf-locks"
-  #   encrypt        = true
-  # }
+  # Local state: state is managed locally on disk (terraform.tfstate)
 }
 
 provider "aws" {
