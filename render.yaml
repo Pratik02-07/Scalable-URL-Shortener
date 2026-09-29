@@ -31,9 +31,9 @@ services:
           type: keyvalue
           name: cold-caller-redis
           property: connectionString
-      # 🔥 FIX: Formats the raw string host into a valid stringified JSON list structure
+      # 🚀 FIX 1: Formats the frontend's full public URL safely into a valid JSON array for Python/Pydantic
       - key: ALLOWED_ORIGINS
-        value: '["https://${URL_SHORTENER_FRONTEND_HOST}"]'
+        value: '["${URL_SHORTENER_FRONTEND_URL}"]'
 
   # ─── Frontend Web App (Next.js) ──────────────────────────────────────────────
   - type: web
@@ -50,11 +50,12 @@ services:
         value: "3000"
       - key: NODE_ENV
         value: production
+      # 🚀 FIX 2: Changed from 'property: host' to 'property: url' so the browser can reach it publicly
       - key: NEXT_PUBLIC_API_URL
         fromService:
           type: web
           name: url-shortener-backend
-          property: host
+          property: url
 
 databases:
   # ─── PostgreSQL Database ─────────────────────────────────────────────────────

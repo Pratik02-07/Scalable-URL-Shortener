@@ -70,16 +70,18 @@ module "alb" {
 }
 
 module "rds" {
-  source              = "../../modules/rds"
-  name                = local.name
-  vpc_id              = module.vpc.vpc_id
-  private_subnet_ids  = module.vpc.private_subnet_ids
-  ecs_sg_id           = module.ecs.ecs_tasks_sg_id
-  db_password         = var.db_password
-  instance_class      = "db.t3.micro"
-  multi_az            = false # dev: single-AZ to save cost
-  deletion_protection = false
-  tags                = local.tags
+  source                       = "../../modules/rds"
+  name                         = local.name
+  vpc_id                       = module.vpc.vpc_id
+  private_subnet_ids           = module.vpc.private_subnet_ids
+  ecs_sg_id                    = module.ecs.ecs_tasks_sg_id
+  db_password                  = var.db_password
+  instance_class               = "db.t3.micro"
+  multi_az                     = false # dev: single-AZ to save cost
+  deletion_protection          = false
+  backup_retention_days        = 1
+  performance_insights_enabled = false
+  tags                         = local.tags
 }
 
 module "redis" {

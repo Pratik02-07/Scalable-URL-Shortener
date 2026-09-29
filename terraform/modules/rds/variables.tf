@@ -35,7 +35,11 @@ variable "deletion_protection" {
 }
 variable "backup_retention_days" {
   type    = number
-  default = 7
+  default = 1
+}
+variable "performance_insights_enabled" {
+  type    = bool
+  default = false
 }
 variable "tags" {
   type    = map(string)

@@ -66,18 +66,19 @@ module "alb" {
 }
 
 module "rds" {
-  source                = "../../modules/rds"
-  name                  = local.name
-  vpc_id                = module.vpc.vpc_id
-  private_subnet_ids    = module.vpc.private_subnet_ids
-  ecs_sg_id             = module.ecs.ecs_tasks_sg_id
-  db_password           = var.db_password
-  instance_class        = "db.t3.small"
-  allocated_storage     = 50
-  multi_az              = true # HA: standby in a second AZ
-  deletion_protection   = true
-  backup_retention_days = 14
-  tags                  = local.tags
+  source                       = "../../modules/rds"
+  name                         = local.name
+  vpc_id                       = module.vpc.vpc_id
+  private_subnet_ids           = module.vpc.private_subnet_ids
+  ecs_sg_id                    = module.ecs.ecs_tasks_sg_id
+  db_password                  = var.db_password
+  instance_class               = "db.t3.small"
+  allocated_storage            = 50
+  multi_az                     = true # HA: standby in a second AZ
+  deletion_protection          = true
+  backup_retention_days        = 14
+  performance_insights_enabled = true
+  tags                         = local.tags
 }
 
 module "redis" {

@@ -88,7 +88,7 @@ resource "aws_db_instance" "main" {
 
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
 
-  performance_insights_enabled = true
+  performance_insights_enabled = var.performance_insights_enabled
 
   tags = merge(var.tags, { Name = "${var.name}-postgres" })
 }
