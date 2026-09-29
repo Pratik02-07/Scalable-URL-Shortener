@@ -89,7 +89,7 @@ jobs:
             --tag "$IMAGE" \
             --tag "$LATEST" \
             --push \
-            ./Backend
+            ./backend
 
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
 
@@ -137,7 +137,7 @@ jobs:
             --tag "$IMAGE" \
             --tag "$LATEST" \
             --push \
-            ./Frontend
+            ./frontend
 
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
 
