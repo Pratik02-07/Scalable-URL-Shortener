@@ -149,7 +149,6 @@ resource "aws_ecs_task_definition" "backend" {
 
     environment = [
       { name = "APP_ENV", value = var.app_env },
-      { name = "DEBUG", value = var.app_env == "production" ? "false" : "true" },
       { name = "BASE_URL", value = "http://${var.alb_dns_name}" }
     ]
 

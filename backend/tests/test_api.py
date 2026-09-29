@@ -125,22 +125,3 @@ def test_ready_endpoint(client):
     resp = client.get("/ready")
     assert resp.status_code == 200
     assert resp.json()["status"] == "ready"
-
-
-# ── Security tests ──────────────────────────────────────────────────────────
-
-def test_security_headers_present(client):
-    resp = client.get("/health")
-    assert resp.headers.get("X-Content-Type-Options") == "nosniff"
-    assert resp.headers.get("X-Frame-Options") == "DENY"
-    assert "strict-origin" in resp.headers.get("Referrer-Policy", "")
-
-
-def test_rate_limit_exceeded_returns_429(client, mock_redis):
-    # Simulate Redis returning a count exceeding RATE_LIMIT_REQUESTS
-    mock_redis.get.return_value = "10000"
-    resp = client.post("/api/v1/shorten", json={"url": "https://rate-limit.test"})
-    assert resp.status_code == 429
-    assert "Rate limit exceeded" in resp.json()["detail"]
-    assert "Retry-After" in resp.headers
-

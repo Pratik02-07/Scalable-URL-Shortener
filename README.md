@@ -1,7 +1,6 @@
 <div align="center">
 
-# Scalable URL Shortener — AWS DevOps Platform
-
+## Scalable URL Shortener
 
 [![CI Workflow](https://github.com/Pratik02-07/Scalable-URL-Shortene/actions/workflows/ci.yml/badge.svg)](https://github.com/Pratik02-07/Scalable-URL-Shortene/actions/workflows/ci.yml)
 ![AWS EKS](https://img.shields.io/badge/AWS-EKS%20v1.31-orange?logo=amazon-aws&logoColor=white)
@@ -14,21 +13,19 @@
 
 
 
-An enterprise-grade, cloud-native RESTful task management microservice built with **Python FastAPI** and **PostgreSQL**, deployed on **AWS EKS** using **Terraform (IaC)**, **GitOps (ArgoCD & Kustomize)**, **GitHub Actions (OIDC + Trivy)**, and monitored via **Prometheus & Grafana**.
-
 <br />
 
-![DevOps Cloud Platform Banner](Docs/Banner.png)
+![](Docs/Architectures.png)
 
 </div>
 
 ---
 
 
-> **A production-grade URL-shortening platform built as a DevOps portfolio project.**  
+
+> **A scalable, production-grade URL-shortening platform.**  
 > Demonstrates containers, CI/CD, caching, infrastructure-as-code, and cloud deployment on AWS.
 
----
 
 ## Architecture
 
