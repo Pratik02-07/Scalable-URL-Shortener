@@ -1,6 +1,6 @@
 <div align="center">
 
-# Scalable URL Shortener
+# SnapLink — Scalable URL Shortener
 
 [![CI Workflow](https://github.com/Pratik02-07/Scalable-URL-Shortener/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Pratik02-07/Scalable-URL-Shortener/actions/workflows/ci.yml)
 [![CD Workflow](https://github.com/Pratik02-07/Scalable-URL-Shortener/actions/workflows/cd.yml/badge.svg?branch=master)](https://github.com/Pratik02-07/Scalable-URL-Shortener/actions/workflows/cd.yml)
@@ -20,12 +20,11 @@
 >
 > The project demonstrates containerization, CI/CD, infrastructure-as-code, caching, cloud deployment, security, observability, and load testing.
 ---
-
+<img src="docs/Deployement.png" alt="SnapLink Deployment" />
+<br><br>
 <img src="docs/AWSArchitecture.png" alt="Scalable URL Shortener AWS Architecture" />
-
 <br><br>
 <img src="docs/2.png" alt="Scalable URL Shortener AWS Architecture" />
-
 </div>
 
 ## System Flow
