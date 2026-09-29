@@ -7,7 +7,7 @@
 # ── Security Group: RDS ───────────────────────────────────────────────────────
 resource "aws_security_group" "rds" {
   name        = "${var.name}-rds-sg"
-  description = "PostgreSQL — allow ingress from ECS tasks only"
+  description = "PostgreSQL - allow ingress from ECS tasks only"
   vpc_id      = var.vpc_id
 
   ingress {

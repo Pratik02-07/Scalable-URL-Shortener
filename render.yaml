@@ -29,13 +29,11 @@ services:
       - key: REDIS_URL
         fromService:
           type: keyvalue
-          name: cold-caller-redis  # ⚡ Connected to your existing active Free tier Redis
+          name: cold-caller-redis
           property: connectionString
+      # 🔥 FIX: Formats the raw string host into a valid stringified JSON list structure
       - key: ALLOWED_ORIGINS
-        fromService:
-          type: web
-          name: url-shortener-frontend
-          property: host
+        value: '["https://${URL_SHORTENER_FRONTEND_HOST}"]'
 
   # ─── Frontend Web App (Next.js) ──────────────────────────────────────────────
   - type: web
@@ -65,4 +63,4 @@ databases:
     user: urlshortener_user
     plan: free
     region: oregon
-    ipAllowList: [] # Internal access only
+    ipAllowList: []

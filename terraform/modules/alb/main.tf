@@ -113,24 +113,26 @@ resource "aws_lb_listener" "http" {
   port              = 80
   protocol          = "HTTP"
 
-  # Route API traffic to backend, everything else to frontend
+  # Route API traffic and short code redirects to backend by default
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.frontend.arn
+    target_group_arn = aws_lb_target_group.backend.arn
   }
 }
 
-# Route /api/* and short-redirect paths to backend
-resource "aws_lb_listener_rule" "api" {
+# Route UI homepage and Next.js static assets to frontend
+resource "aws_lb_listener_rule" "frontend" {
   listener_arn = aws_lb_listener.http.arn
   priority     = 10
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.backend.arn
+    target_group_arn = aws_lb_target_group.frontend.arn
   }
 
   condition {
-    path_pattern { values = ["/api/*", "/health", "/ready", "/{proxy+}"] }
+    path_pattern {
+      values = ["/", "/_next/*", "/favicon.ico"]
+    }
   }
 }

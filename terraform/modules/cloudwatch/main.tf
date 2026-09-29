@@ -120,7 +120,6 @@ resource "aws_cloudwatch_metric_alarm" "backend_memory_high" {
 
 # 3. ALB High 5xx Error Rate Alarm
 resource "aws_cloudwatch_metric_alarm" "alb_5xx_errors" {
-  count               = var.alb_arn_suffix != "" ? 1 : 0
   alarm_name          = "${var.name}-alb-high-5xx"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
@@ -157,7 +156,6 @@ resource "aws_cloudwatch_metric_alarm" "high_latency" {
 
 # 5. RDS High CPU Alarm (> 80%)
 resource "aws_cloudwatch_metric_alarm" "rds_cpu_high" {
-  count               = var.rds_instance_identifier != "" ? 1 : 0
   alarm_name          = "${var.name}-rds-high-cpu"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 2

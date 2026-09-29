@@ -8,7 +8,7 @@
 # ── Security Group: Redis ─────────────────────────────────────────────────────
 resource "aws_security_group" "redis" {
   name        = "${var.name}-redis-sg"
-  description = "Redis — allow ingress from ECS tasks only"
+  description = "Redis - allow ingress from ECS tasks only"
   vpc_id      = var.vpc_id
 
   ingress {

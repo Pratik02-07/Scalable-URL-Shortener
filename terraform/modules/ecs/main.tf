@@ -82,7 +82,7 @@ resource "aws_iam_role" "task" {
 # ── Security Group: ECS Tasks ─────────────────────────────────────────────────
 resource "aws_security_group" "ecs_tasks" {
   name        = "${var.name}-ecs-tasks-sg"
-  description = "ECS tasks — allow traffic from ALB only"
+  description = "ECS tasks - allow traffic from ALB only"
   vpc_id      = var.vpc_id
 
   ingress {
