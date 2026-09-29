@@ -1,4 +1,29 @@
+<div align="center">
+
 # Scalable URL Shortener — AWS DevOps Platform
+
+
+[![CI Workflow](https://github.com/Pratik02-07/Scalable-URL-Shortene/actions/workflows/ci.yml/badge.svg)](https://github.com/Pratik02-07/Scalable-URL-Shortene/actions/workflows/ci.yml)
+![AWS EKS](https://img.shields.io/badge/AWS-EKS%20v1.31-orange?logo=amazon-aws&logoColor=white)
+![Terraform](https://img.shields.io/badge/IaC-Terraform%20~%3E%205.0-purple?logo=terraform&logoColor=white)
+![GithubActions](https://img.shields.io/badge/GitHub%20Actions-Workflow-blue?logo=github&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-1.0.0-009688?logo=fastapi&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Multi--stage-2496ED?logo=docker&logoColor=white)
+
+
+
+
+An enterprise-grade, cloud-native RESTful task management microservice built with **Python FastAPI** and **PostgreSQL**, deployed on **AWS EKS** using **Terraform (IaC)**, **GitOps (ArgoCD & Kustomize)**, **GitHub Actions (OIDC + Trivy)**, and monitored via **Prometheus & Grafana**.
+
+<br />
+
+![DevOps Cloud Platform Banner](Docs/Banner.png)
+
+</div>
+
+---
+
 
 > **A production-grade URL-shortening platform built as a DevOps portfolio project.**  
 > Demonstrates containers, CI/CD, caching, infrastructure-as-code, and cloud deployment on AWS.
@@ -149,7 +174,7 @@ Interactive API docs: http://localhost:8000/docs
 ### 3. Run backend tests
 
 ```bash
-cd backend
+cd Backend
 python -m pytest tests/ -v
 ```
 
@@ -160,13 +185,13 @@ python -m pytest tests/ -v
 | Phase | Status | Description |
 |---|---|---|
 | 1 — Application | ✅ Complete | FastAPI + PostgreSQL + Redis (local) |
-| 2 — Containerization | ✅ Complete | Docker + Docker Compose multi-stage builds |
-| 3 — CI with GitHub Actions | ✅ Complete | Lint → Type Check → Pytest → Docker build → Trivy |
-| 4 — AWS Infrastructure (Terraform) | ✅ Complete | VPC, ALB, ECS Fargate, RDS Multi-AZ, ElastiCache Redis, ECR, CloudWatch |
-| 5 — ECS Fargate Deployment | ✅ Complete | GitHub Actions → ECR → ECS automated rolling update |
-| 6 — Redis + DB Scaling | ✅ Complete | ElastiCache Redis replication + RDS Multi-AZ failover |
-| 7 — Observability | ✅ Complete | CloudWatch structured logs, dashboards, and CPU/5xx alarms |
-| 8 — Load Testing | ✅ Complete | k6 load test script validating sub-50ms latency |
+| 2 — Containerization | ✅ Complete | Docker + Docker Compose |
+| 3 — CI with GitHub Actions | 🔜 Next | Lint → Test → Docker build → Trivy |
+| 4 — AWS Infrastructure (Terraform) | 🔜 | VPC, ALB, ECS, RDS, ElastiCache, ECR |
+| 5 — ECS Fargate Deployment | 🔜 | GitHub Actions → ECR → ECS |
+| 6 — Redis + DB Scaling | 🔜 | ElastiCache + RDS Multi-AZ |
+| 7 — Observability | 🔜 | CloudWatch logs, metrics, alarms |
+| 8 — Load Testing | 🔜 | k6 at 100–4,000 RPS |
 
 ---
 
@@ -174,19 +199,16 @@ python -m pytest tests/ -v
 
 ```
 .
-├── backend/
+├── Backend/
 │   ├── app/
 │   │   ├── api/
 │   │   │   ├── shorten.py       # POST /api/v1/shorten
 │   │   │   └── redirect.py      # GET /{short_code}, GET /api/v1/stats/{code}
 │   │   ├── core/
-│   │   │   ├── config.py        # Pydantic settings (env vars)
-│   │   │   └── logging.py       # Structured JSON logging
+│   │   │   └── config.py        # Pydantic settings (env vars)
 │   │   ├── db/
 │   │   │   ├── base.py          # SQLAlchemy DeclarativeBase
 │   │   │   └── session.py       # Engine + SessionLocal + get_db()
-│   │   ├── middleware/
-│   │   │   └── timing.py        # Request timing middleware
 │   │   ├── models/
 │   │   │   └── url.py           # URL ORM model
 │   │   ├── schemas/
@@ -197,24 +219,19 @@ python -m pytest tests/ -v
 │   │   └── main.py              # FastAPI app + lifespan + CORS
 │   ├── tests/
 │   │   ├── test_api.py          # Integration tests (TestClient + mocked Redis)
-│   │   ├── test_cache_service.py# Redis cache tests
 │   │   ├── test_url_service.py  # Unit tests for service layer
 │   │   ├── test_database.py     # ORM model tests
 │   │   └── test_config.py       # Settings load test
 │   ├── Dockerfile               # Multi-stage, non-root, HEALTHCHECK
 │   ├── requirements.txt
 │   └── pytest.ini
-├── frontend/
-│   ├── src/app/                 # Next.js App Router UI
-│   ├── Dockerfile               # Standalone multi-stage build
-│   └── package.json
+├── Frontend/
+│   └── (Next.js app)
 ├── terraform/
-│   ├── modules/                 # vpc, alb, ecr, ecs, rds, redis, cloudwatch
+│   ├── modules/                 # vpc / alb / ecs / rds / redis / ecr
 │   └── environments/            # dev / prod
-├── tests/
-│   └── k6_load_test.js          # k6 load testing script
 ├── .github/
-│   └── workflows/               # ci.yml, cd.yml, terraform.yml
+│   └── workflows/               # ci.yml / cd.yml  (Phase 3)
 ├── docker-compose.yml
 ├── .env.example
 └── README.md

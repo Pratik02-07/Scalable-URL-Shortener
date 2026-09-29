@@ -6,7 +6,6 @@ from app.services.cache_service import (
     get_cached_url,
     invalidate_cache,
     get_redis,
-    DEFAULT_TTL_SECONDS,
 )
 
 def test_get_redis_singleton():
@@ -27,7 +26,6 @@ def test_cache_url_handles_redis_error():
     mock_client = MagicMock()
     mock_client.set.side_effect = redis.RedisError("Connection failed")
     with patch("app.services.cache_service._redis_client", mock_client):
-        # Should not raise exception
         cache_url("code123", "https://example.com/target")
 
 def test_get_cached_url_hit():
@@ -62,5 +60,4 @@ def test_invalidate_cache_handles_redis_error():
     mock_client = MagicMock()
     mock_client.delete.side_effect = redis.RedisError("Redis failure")
     with patch("app.services.cache_service._redis_client", mock_client):
-        # Should not raise exception
         invalidate_cache("code123")

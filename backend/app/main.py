@@ -42,18 +42,50 @@ app = FastAPI(
     description="A scalable URL-shortening service built with FastAPI.",
     version="1.0.0",
     lifespan=lifespan,
+    docs_url="/docs" if settings.DEBUG else None,
+    redoc_url="/redoc" if settings.DEBUG else None,
+    openapi_url="/openapi.json" if settings.DEBUG else None,
 )
+
+# Global unhandled exception handler to prevent leaking stack traces
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(
+        "Unhandled error processing %s %s: %s",
+        request.method,
+        request.url.path,
+        exc,
+        exc_info=True,
+    )
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error. Please try again later."},
+    )
+
+# Security headers middleware
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    if not settings.DEBUG:
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 # Request Timing Middleware (latency tracking & response header X-Response-Time-Ms)
 app.add_middleware(RequestTimingMiddleware)
 
-# CORS — allow the Next.js frontend and any local dev origin
+# CORS — restricted to explicitly configured origins (e.g. Next.js frontend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten in production via env var
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Response-Time-Ms"],
 )
 
 # ---------------------------------------------------------------------------

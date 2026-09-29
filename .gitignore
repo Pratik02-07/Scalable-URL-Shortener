@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 # local SQLite dev databases
 *.db
+.reticle/
+.reticle*
+render/
 *$py.class
 *.pyo
 *.pyd
