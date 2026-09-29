@@ -1,29 +1,16 @@
-# Render Production Blueprint Specification
-# Docs: https://render.com/docs/blueprint-spec
-
-databases:
-  - name: url-shortener-db
-    databaseName: urlshortener
-    user: urlshortener_user
-    plan: free
-
+version: "1"
 services:
-  # ─── Redis Cache ─────────────────────────────────────────────────────────────
-  - type: redis
-    name: url-shortener-redis
-    plan: free
-    maxmemoryPolicy: allkeys-lru
-    ipAllowList: [] # internal access only from services in this Render account
-
   # ─── Backend API Service (FastAPI) ───────────────────────────────────────────
   - type: web
     name: url-shortener-backend
     runtime: docker
-    dockerfilePath: Dockerfile
-    dockerContext: .
-    rootDir: backend
     plan: free
+    region: oregon
     healthCheckPath: /health
+    dockerContext: .
+    dockerfilePath: Dockerfile
+    autoDeployTrigger: commit
+    rootDir: backend
     envVars:
       - key: PORT
         value: "8000"
@@ -41,7 +28,7 @@ services:
           property: connectionString
       - key: REDIS_URL
         fromService:
-          type: redis
+          type: keyvalue
           name: url-shortener-redis
           property: connectionString
       - key: ALLOWED_ORIGINS
@@ -54,10 +41,12 @@ services:
   - type: web
     name: url-shortener-frontend
     runtime: docker
-    dockerfilePath: Dockerfile
-    dockerContext: .
-    rootDir: frontend
     plan: free
+    region: oregon
+    dockerContext: .
+    dockerfilePath: Dockerfile
+    autoDeployTrigger: commit
+    rootDir: frontend
     envVars:
       - key: PORT
         value: "3000"
@@ -68,3 +57,21 @@ services:
           type: web
           name: url-shortener-backend
           property: host
+
+  # ─── Redis Cache ─────────────────────────────────────────────────────────────
+  - type: keyvalue
+    name: url-shortener-redis
+    plan: free
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+    persistenceMode: "off"
+    ipAllowList: [] # Internal access only
+
+databases:
+  # ─── PostgreSQL Database ─────────────────────────────────────────────────────
+  - name: url-shortener-db
+    databaseName: urlshortener
+    user: urlshortener_user
+    plan: free
+    region: oregon
+    ipAllowList: [] # Internal access only
