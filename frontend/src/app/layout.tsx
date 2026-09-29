@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LinkSnip — Scalable URL Shortener",
+  title: "SnapLink — Scalable URL Shortener",
   description:
     "A blazing-fast, production-grade URL shortener built on FastAPI, Redis, and PostgreSQL. Shorten long links in milliseconds.",
-  keywords: ["url shortener", "link shortener", "short url", "linksnip"],
+  keywords: ["url shortener", "link shortener", "short url", "snaplink"],
   openGraph: {
-    title: "LinkSnip — Scalable URL Shortener",
+    title: "SnapLink — Scalable URL Shortener",
     description: "Shorten long URLs instantly. Built for scale.",
     type: "website",
   },

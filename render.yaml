@@ -24,6 +24,8 @@ services:
         value: "8000"
       - key: ENVIRONMENT
         value: production
+      - key: BASE_URL
+        value: "https://url-shortener-backend-b729.onrender.com"
       - key: LOG_JSON
         value: "true"
       - key: RATE_LIMIT_ENABLED
@@ -60,10 +62,7 @@ services:
       - key: NEXT_PUBLIC_API_URL
         value: "https://url-shortener-backend-b729.onrender.com"
       - key: BACKEND_URL
-        fromService:
-          type: web
-          name: url-shortener-backend
-          property: host
+        value: "https://url-shortener-backend-b729.onrender.com"
 
 databases:
   # ─── PostgreSQL Database ─────────────────────────────────────────────────────

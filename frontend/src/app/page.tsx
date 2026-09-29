@@ -172,7 +172,7 @@ export default function HomePage() {
             <div className={styles.logoMark} aria-hidden="true">
               <LinkIcon />
             </div>
-            <span className={styles.logoName}>LinkSnip</span>
+            <span className={styles.logoName}>SnapLink</span>
           </div>
           <div className={styles.navPills}>
             <span className={styles.pill}>
