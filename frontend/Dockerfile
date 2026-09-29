@@ -21,6 +21,10 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Upgrade packages to fix OS vulnerabilities and remove build-only package managers
+RUN apk upgrade --no-cache && \
+    rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /opt/yarn* /usr/local/bin/yarn* /usr/local/bin/corepack
+
 # Run as non-root
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 

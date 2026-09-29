@@ -43,17 +43,14 @@ jobs:
 
       - name: Lint with Ruff
         run: |
-          pip install ruff
           ruff check app/ tests/ --output-format=github
+          ruff format app/ tests/ --check
 
       - name: Type-check with mypy
-        run: |
-          pip install mypy types-redis
-          mypy app/ --ignore-missing-imports --no-strict-optional
+        run: mypy app/ --ignore-missing-imports --no-strict-optional
 
       - name: Run tests with coverage
         run: |
-          pip install pytest-cov
           python -m pytest tests/ -v \
             --cov=app \
             --cov-report=xml \

@@ -19,8 +19,8 @@ FROM python:3.12-slim AS runtime
 
 WORKDIR /app
 
-# Install only the shared libs needed at runtime
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install and upgrade shared libs needed at runtime to patch OS vulnerabilities
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         libpq5 \
         curl \
     && rm -rf /var/lib/apt/lists/*

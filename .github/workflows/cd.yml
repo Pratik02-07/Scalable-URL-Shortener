@@ -37,11 +37,35 @@ jobs:
     name: Wait for CI
     runs-on: ubuntu-latest
     steps:
-      - name: Verify CI passed
+      - name: Verify Backend CI passed
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.sha }}
           check-name: "Backend — Lint & Test"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      - name: Verify Frontend CI passed
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: "Frontend — Lint & Build"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      - name: Verify Docker Backend scan passed
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: "Docker — Build & Scan Backend"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      - name: Verify Docker Frontend scan passed
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: "Docker — Build & Scan Frontend"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
 

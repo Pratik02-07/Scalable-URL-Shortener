@@ -13,10 +13,10 @@ Usage:
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
 import json
 import logging
 import sys
+from collections.abc import MutableMapping
 from typing import Any
 
 

@@ -230,11 +230,11 @@ The readiness endpoint verifies that required backend dependencies are available
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/Pratik02-07/Scalable-URL-Shortene.git
+git clone https://github.com/Pratik02-07/Scalable-URL-Shortener.git
 
-cd Scalable-URL-Shortene
+cd Scalable-URL-Shortener
 ```
-
+  
 ## 2. Configure environment variables
 
 ```bash
