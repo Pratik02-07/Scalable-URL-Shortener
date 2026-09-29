@@ -31,7 +31,6 @@ services:
           type: keyvalue
           name: cold-caller-redis
           property: connectionString
-      # 🚀 FIX 1: Explicitly pass your static frontend domain array for backend CORS security
       - key: ALLOWED_ORIGINS
         value: '["https://url-shortener-frontend-qv6g.onrender.com"]'
 
@@ -50,8 +49,13 @@ services:
         value: "3000"
       - key: NODE_ENV
         value: production
-      # 🚀 FIX 2: Explicitly pass the production backend endpoint so it compiles successfully into the bundle
+      # 🚀 FIX A: For client-side browser fetch functions
       - key: NEXT_PUBLIC_API_URL
+        value: "https://url-shortener-backend-b729.onrender.com"
+      # 🚀 FIX B: For Next.js Server-Side API Routes (App Router/Pages Router handlers)
+      - key: BACKEND_URL
+        value: "https://url-shortener-backend-b729.onrender.com"
+      - key: API_URL
         value: "https://url-shortener-backend-b729.onrender.com"
 
 databases:
