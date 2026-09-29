@@ -50,12 +50,9 @@ services:
         value: "3000"
       - key: NODE_ENV
         value: production
-      # 🚀 FIX 2: Changed from 'property: host' to 'property: url' so the browser can reach it publicly
+      # 🚀 FIX 2: Bypasses the property restriction by reading Render's automatic global environment variables
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: url-shortener-backend
-          property: url
+        value: "${URL_SHORTENER_BACKEND_URL}"
 
 databases:
   # ─── PostgreSQL Database ─────────────────────────────────────────────────────
