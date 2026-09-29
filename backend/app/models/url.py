@@ -11,7 +11,7 @@ class URL(Base):
         String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
     short_code: Mapped[str] = mapped_column(
-        String(12), unique=True, index=True, nullable=False
+        String(50), unique=True, index=True, nullable=False
     )
     original_url: Mapped[str] = mapped_column(Text, nullable=False)
     click_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

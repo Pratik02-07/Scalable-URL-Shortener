@@ -2,8 +2,8 @@
 
 # Scalable URL Shortener
 
-[![CI Workflow](https://github.com/Pratik02-07/Scalable-URL-Shortene/actions/workflows/ci.yml/badge.svg)](https://github.com/Pratik02-07/Scalable-URL-Shortene/actions/workflows/ci.yml)
-[![CD Workflow](https://github.com/Pratik02-07/Scalable-URL-Shortene/actions/workflows/cd.yml/badge.svg)](https://github.com/Pratik02-07/Scalable-URL-Shortene/actions/workflows/cd.yml)
+[![CI Workflow](https://github.com/Pratik02-07/Scalable-URL-Shortener/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Pratik02-07/Scalable-URL-Shortener/actions/workflows/ci.yml)
+[![CD Workflow](https://github.com/Pratik02-07/Scalable-URL-Shortener/actions/workflows/cd.yml/badge.svg?branch=master)](https://github.com/Pratik02-07/Scalable-URL-Shortener/actions/workflows/cd.yml)
 
 ![AWS ECS](https://img.shields.io/badge/AWS-ECS%20Fargate-orange?logo=amazon-aws\&logoColor=white)
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-purple?logo=terraform\&logoColor=white)

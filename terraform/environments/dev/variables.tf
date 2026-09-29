@@ -21,5 +21,5 @@ variable "vpc_cidr" {
 variable "db_password" {
   type        = string
   sensitive   = true
-  description = "RDS PostgreSQL master password — set via TF_VAR_db_password or terraform.tfvars"
+  description = "RDS PostgreSQL main password — set via TF_VAR_db_password or terraform.tfvars"
 }

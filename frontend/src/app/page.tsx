@@ -101,8 +101,16 @@ export default function HomePage() {
         body: JSON.stringify(body),
       });
       if (!res.ok) {
-        const err = await res.json();
-        setShortenError(err.detail ?? "Request failed.");
+        let errorMsg = "Request failed.";
+        try {
+          const err = await res.json();
+          errorMsg = Array.isArray(err.detail)
+            ? err.detail.map((d: { msg?: string }) => d.msg ?? "Validation error").join("; ")
+            : (err.detail ?? "Request failed.");
+        } catch {
+          errorMsg = `Server error (${res.status})`;
+        }
+        setShortenError(errorMsg);
         return;
       }
       setResult(await res.json());
@@ -130,8 +138,16 @@ export default function HomePage() {
     try {
       const res = await fetch(`${API_URL}/api/v1/stats/${statsCode.trim()}`);
       if (!res.ok) {
-        const err = await res.json();
-        setStatsError(err.detail ?? "Not found.");
+        let errorMsg = "Not found.";
+        try {
+          const err = await res.json();
+          errorMsg = Array.isArray(err.detail)
+            ? err.detail.map((d: { msg?: string }) => d.msg ?? "Validation error").join("; ")
+            : (err.detail ?? "Not found.");
+        } catch {
+          errorMsg = `Server error (${res.status})`;
+        }
+        setStatsError(errorMsg);
         return;
       }
       setStats(await res.json());

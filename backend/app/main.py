@@ -2,7 +2,8 @@ import logging
 import logging.config
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
@@ -47,14 +48,34 @@ app = FastAPI(
 # Request Timing Middleware (latency tracking & response header X-Response-Time-Ms)
 app.add_middleware(RequestTimingMiddleware)
 
-# CORS — allow the Next.js frontend and any local dev origin
+# CORS — explicitly allow frontend and configured origins
+cors_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+if hasattr(settings, "ALLOWED_ORIGINS") and settings.ALLOWED_ORIGINS:
+    for origin in settings.ALLOWED_ORIGINS:
+        if origin not in cors_origins:
+            cors_origins.append(origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten in production via env var
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error("Unhandled exception processing %s: %s", request.url.path, exc, exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An internal server error occurred. Please try again later."},
+    )
 
 # ---------------------------------------------------------------------------
 # Health / readiness endpoints (used by ECS / ALB health checks)

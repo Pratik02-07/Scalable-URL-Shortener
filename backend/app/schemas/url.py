@@ -4,7 +4,9 @@ from typing import Optional
 
 class URLCreate(BaseModel):
     url: HttpUrl
-    custom_alias: Optional[str] = Field(None, max_length=50)
+    custom_alias: Optional[str] = Field(
+        None, min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_\-\.]+$"
+    )
 
 class URLResponse(BaseModel):
     short_code: str
