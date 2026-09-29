@@ -29,7 +29,7 @@ services:
       - key: REDIS_URL
         fromService:
           type: keyvalue
-          name: url-shortener-redis
+          name: cold-caller-redis  # ⚡ Connected to your existing active Free tier Redis
           property: connectionString
       - key: ALLOWED_ORIGINS
         fromService:
@@ -57,15 +57,6 @@ services:
           type: web
           name: url-shortener-backend
           property: host
-
-  # ─── Redis Cache ─────────────────────────────────────────────────────────────
-  - type: keyvalue
-    name: url-shortener-redis
-    plan: free
-    region: oregon
-    maxmemoryPolicy: allkeys-lru
-    persistenceMode: "off"
-    ipAllowList: [] # Internal access only
 
 databases:
   # ─── PostgreSQL Database ─────────────────────────────────────────────────────
