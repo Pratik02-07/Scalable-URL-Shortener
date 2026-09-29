@@ -1,4 +1,5 @@
 import logging
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -17,7 +18,9 @@ router = APIRouter(prefix="/api/v1", tags=["shorten"])
 @router.post(
     "/shorten", response_model=URLResponse, status_code=status.HTTP_201_CREATED
 )
-def shorten_url(payload: URLCreate, db: Session = Depends(get_db)) -> URLResponse:
+def shorten_url(
+    payload: URLCreate, db: Annotated[Session, Depends(get_db)]
+) -> URLResponse:
     """
     Create a short URL from *payload.url*.
 

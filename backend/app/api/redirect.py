@@ -1,4 +1,5 @@
 import logging
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
@@ -14,7 +15,9 @@ router = APIRouter(tags=["redirect"])
 
 
 @router.get("/{short_code}", response_class=RedirectResponse)
-def redirect_to_url(short_code: str, db: Session = Depends(get_db)) -> RedirectResponse:
+def redirect_to_url(
+    short_code: str, db: Annotated[Session, Depends(get_db)]
+) -> RedirectResponse:
     """
     Redirect the client to the original URL for *short_code*.
 
@@ -46,7 +49,9 @@ def redirect_to_url(short_code: str, db: Session = Depends(get_db)) -> RedirectR
 
 
 @router.get("/api/v1/stats/{short_code}", response_model=URLStatsResponse)
-def get_stats(short_code: str, db: Session = Depends(get_db)) -> URLStatsResponse:
+def get_stats(
+    short_code: str, db: Annotated[Session, Depends(get_db)]
+) -> URLStatsResponse:
     """Return click statistics for *short_code* without redirecting."""
     url_obj = url_service.get_url_by_code(db, short_code)
     if url_obj is None:

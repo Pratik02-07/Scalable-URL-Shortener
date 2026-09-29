@@ -53,7 +53,7 @@ def get_url_by_code(db: Session, short_code: str) -> URL | None:
     """Return the active URL record for *short_code*, or None if not found."""
     return (
         db.query(URL)
-        .filter(URL.short_code == short_code, URL.is_active == True)  # noqa: E712
+        .filter(URL.short_code == short_code, URL.is_active.is_(True))
         .first()
     )
 

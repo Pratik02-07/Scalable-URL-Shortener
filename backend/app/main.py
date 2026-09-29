@@ -69,9 +69,7 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(
-        "Unhandled exception processing %s: %s", request.url.path, exc, exc_info=True
-    )
+    logger.error("Unhandled exception processing %s: %s", request.url.path, exc)
     return JSONResponse(
         status_code=500,
         content={

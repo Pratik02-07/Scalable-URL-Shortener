@@ -13,7 +13,13 @@ terraform {
     }
   }
 
-  # Local state: state is managed locally on disk (terraform.tfstate)
+  backend "s3" {
+    bucket         = "url-shortener-tf-state" # create this bucket first
+    key            = "prod/terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "url-shortener-tf-locks"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
