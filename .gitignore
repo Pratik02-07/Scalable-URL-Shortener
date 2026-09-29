@@ -71,3 +71,5 @@ desktop.ini
 *.pem
 *.key
 secrets/
+
+url_shortener_dev.db

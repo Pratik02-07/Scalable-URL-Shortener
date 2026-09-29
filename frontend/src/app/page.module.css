@@ -3,8 +3,11 @@
 ──────────────────────────────────────────────────────────────── */
 .layout {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -13,6 +16,7 @@
 .nav {
   border-bottom: 1px solid var(--gray-800);
   background: var(--gray-950);
+  border: 1px solid var(--gray-800);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -60,21 +64,15 @@
 }
 
 .pill {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #171717;
   border: 1px solid #292929;
-  border-radius: 6px;
+  border-radius: 7px;
   padding: 0;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.pill:hover {
-  background: #222222;
-  border-color: #383838;
 }
 
 .githubLink {
@@ -84,19 +82,18 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .githubLink:hover {
   color: #ffffff;
-  opacity: 0.9;
   transform: translateY(-1px);
 }
 
 .githubIcon {
   display: block;
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
 }
 
 .pillLive {
@@ -137,16 +134,17 @@
 }
 
 .hero {
-  padding: 4rem 0 2.5rem;
+  padding: 3.5rem 0 2rem;
 }
 
 .heading {
-  font-size: clamp(28px, 4vw, 36px);
+  font-size: clamp(24px, 5.5vw, 36px);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.2;
   color: var(--gray-100);
   margin-bottom: 12px;
+  word-break: break-word;
 }
 
 .accent {
@@ -154,9 +152,9 @@
 }
 
 .subheading {
-  font-size: 15px;
+  font-size: clamp(13.5px, 2.5vw, 15px);
   color: var(--gray-400);
-  line-height: 1.65;
+  line-height: 1.6;
   max-width: 480px;
 }
 
@@ -169,6 +167,7 @@
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 3rem;
+  width: 100%;
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -179,6 +178,13 @@
   border-bottom: 1px solid var(--gray-800);
   padding: 0 20px;
   gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabRow::-webkit-scrollbar {
+  display: none;
 }
 
 .tabBtn {
@@ -269,6 +275,7 @@
 .inputGroup {
   display: flex;
   align-items: stretch;
+  width: 100%;
 }
 
 .inputPrefix {
@@ -284,11 +291,13 @@
   white-space: nowrap;
   font-family: 'Geist Mono', monospace;
   user-select: none;
+  flex-shrink: 0;
 }
 
 .inputSuffix {
   border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
   flex: 1;
+  min-width: 0;
 }
 
 /* Error */
@@ -389,10 +398,12 @@
 
 .shortUrl {
   flex: 1;
+  min-width: 0;
   font-family: 'Geist Mono', monospace;
   font-size: 13px;
   color: var(--blue-400);
   word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .copyBtn {
@@ -411,6 +422,7 @@
   font-family: inherit;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   flex-shrink: 0;
+  touch-action: manipulation;
 }
 
 .copyBtn:hover { background: var(--gray-700); }
@@ -434,6 +446,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .metaKey {
@@ -446,6 +459,8 @@
 .metaVal {
   font-size: 12px;
   color: var(--gray-400);
+  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .metaCode {
@@ -484,6 +499,7 @@
   gap: 4px;
   padding: 14px 16px;
   background: var(--gray-900);
+  min-width: 0;
 }
 
 .statNum {
@@ -507,9 +523,10 @@
 
 .statsOriginal {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .statsLink {
@@ -519,6 +536,9 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .statsLink:hover { text-decoration: underline; }
@@ -553,14 +573,141 @@
 }
 
 /* ────────────────────────────────────────────────────────────────
-   Responsive
+   Responsive Design
 ──────────────────────────────────────────────────────────────── */
+
+/* Tablets and small laptops (max-width: 640px) */
+@media (max-width: 640px) {
+  .navInner {
+    padding: 0 1rem;
+  }
+
+  .main {
+    padding: 0 1rem 3.5rem;
+  }
+
+  .hero {
+    padding: 2.75rem 0 1.75rem;
+  }
+
+  .panel {
+    border-radius: 8px;
+    margin-bottom: 2.25rem;
+  }
+
+  .form {
+    padding: 18px 16px;
+    gap: 14px;
+  }
+
+  .input {
+    font-size: 16px; /* Prevents auto-zoom on iOS Safari */
+  }
+
+  .resultBox {
+    padding: 14px 16px;
+  }
+}
+
+/* Medium mobile devices (max-width: 540px) */
+@media (max-width: 540px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statCell:not(:last-child) {
+    border-bottom: 1px solid var(--gray-800);
+  }
+
+  .statCell {
+    padding: 12px 14px;
+  }
+}
+
+/* Mobile Phones (max-width: 480px) */
 @media (max-width: 480px) {
-  .navPills { display: none; }
-  .hero { padding: 2.5rem 0 2rem; }
-  .statsGrid { grid-template-columns: 1fr; }
-  .statCell:not(:last-child) { border-bottom: 1px solid var(--gray-800); }
-  .resultMeta { gap: 8px; }
-  .metaDivider { display: none; }
-  .submitBtn { align-self: stretch; min-width: unset; }
+  .hero {
+    padding: 2rem 0 1.25rem;
+  }
+
+  .tabRow {
+    padding: 0 12px;
+  }
+
+  .tabBtn {
+    padding: 11px 12px 10px;
+    font-size: 12.5px;
+    gap: 6px;
+  }
+
+  .form {
+    padding: 16px 14px;
+    gap: 13px;
+  }
+
+  .submitBtn {
+    align-self: stretch;
+    width: 100%;
+    min-width: unset;
+    height: 42px;
+    font-size: 13.5px;
+  }
+
+  .resultBox {
+    padding: 14px;
+  }
+
+  .resultMeta {
+    gap: 8px 12px;
+  }
+
+  .metaDivider {
+    display: none;
+  }
+}
+
+/* Narrow mobile screens (max-width: 420px) */
+@media (max-width: 420px) {
+  .resultLinkRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .copyBtn {
+    width: 100%;
+    justify-content: center;
+    height: 34px;
+  }
+}
+
+/* Extra small screens (max-width: 360px) */
+@media (max-width: 360px) {
+  .navInner {
+    padding: 0 0.75rem;
+  }
+
+  .logoName {
+    font-size: 13px;
+  }
+
+  .logoMark {
+    width: 26px;
+    height: 26px;
+  }
+
+  .pill {
+    width: 34px;
+    height: 30px;
+  }
+
+  .githubIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .main {
+    padding: 0 0.75rem 3rem;
+  }
 }
