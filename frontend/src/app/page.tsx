@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 interface ShortenResponse {
   short_code: string;
