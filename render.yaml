@@ -31,8 +31,9 @@ services:
           type: keyvalue
           name: cold-caller-redis
           property: connectionString
+      # 🚀 FIX 1: Static public URL for backend CORS framework validation
       - key: ALLOWED_ORIGINS
-        value: '["https://url-shortener-frontend-qv6g.onrender.com"]'
+        value: '["https://onrender.com", "https://url-shortener-frontend-qv6g.onrender.com"]'
 
   # ─── Frontend Web App (Next.js) ──────────────────────────────────────────────
   - type: web
@@ -49,14 +50,15 @@ services:
         value: "3000"
       - key: NODE_ENV
         value: production
-      # 🚀 FIX A: For client-side browser fetch functions
+      # 🚀 FIX 2: Static compilation fallback URL for client-side fetches
       - key: NEXT_PUBLIC_API_URL
         value: "https://url-shortener-backend-b729.onrender.com"
-      # 🚀 FIX B: For Next.js Server-Side API Routes (App Router/Pages Router handlers)
+      # 🚀 FIX 3: Resolves internal proxy ECONNREFUSED by mapping to Render private network host property
       - key: BACKEND_URL
-        value: "https://url-shortener-backend-b729.onrender.com"
-      - key: API_URL
-        value: "https://url-shortener-backend-b729.onrender.com"
+        fromService:
+          type: web
+          name: url-shortener-backend
+          property: host
 
 databases:
   # ─── PostgreSQL Database ─────────────────────────────────────────────────────
