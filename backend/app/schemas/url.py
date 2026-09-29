@@ -1,12 +1,14 @@
-from pydantic import BaseModel, HttpUrl, Field, ConfigDict
 from datetime import datetime
-from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+
 
 class URLCreate(BaseModel):
     url: HttpUrl
-    custom_alias: Optional[str] = Field(
+    custom_alias: str | None = Field(
         None, min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_\-\.]+$"
     )
+
 
 class URLResponse(BaseModel):
     short_code: str
@@ -17,6 +19,7 @@ class URLResponse(BaseModel):
     is_active: bool
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class URLStatsResponse(BaseModel):
     short_code: str

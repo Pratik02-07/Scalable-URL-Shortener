@@ -1,8 +1,11 @@
 import uuid
-from datetime import datetime, timezone
-from sqlalchemy import String, Text, Integer, DateTime, Boolean
+from datetime import UTC, datetime
+
+from sqlalchemy import Boolean, DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.db.base import Base
+
 
 class URL(Base):
     __tablename__ = "urls"
@@ -16,6 +19,6 @@ class URL(Base):
     original_url: Mapped[str] = mapped_column(Text, nullable=False)
     click_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

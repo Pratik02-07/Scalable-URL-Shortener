@@ -1,7 +1,9 @@
+import logging
 import random
 import string
-import logging
+
 from sqlalchemy.orm import Session
+
 from app.models.url import URL
 
 logger = logging.getLogger(__name__)

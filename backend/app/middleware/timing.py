@@ -10,6 +10,7 @@ Example log line (JSON mode):
    "message":"request","method":"GET","path":"/health",
    "status_code":200,"duration_ms":0.45}
 """
+
 from __future__ import annotations
 
 import time

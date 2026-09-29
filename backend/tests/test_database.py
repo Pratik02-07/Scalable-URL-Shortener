@@ -1,10 +1,12 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from app.db.base import Base
 from app.models.url import URL
 
 TEST_DATABASE_URL = "sqlite:///:memory:"
+
 
 @pytest.fixture
 def db_session():
@@ -15,11 +17,9 @@ def db_session():
     yield session
     session.close()
 
+
 def test_create_url_model(db_session):
-    url_obj = URL(
-        short_code="aB91xK",
-        original_url="https://example.com/long-url"
-    )
+    url_obj = URL(short_code="aB91xK", original_url="https://example.com/long-url")
     db_session.add(url_obj)
     db_session.commit()
     db_session.refresh(url_obj)

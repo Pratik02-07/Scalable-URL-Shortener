@@ -10,12 +10,12 @@ Usage:
     logger = get_logger(__name__)
     logger.info("cache_hit", short_code=code)
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import sys
-import time
 from typing import Any
 
 
@@ -25,18 +25,35 @@ class _JSONFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         payload: dict[str, Any] = {
             "timestamp": self.formatTime(record, "%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
-            "level":     record.levelname,
-            "logger":    record.name,
-            "message":   record.getMessage(),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
         }
 
         # Attach any extra keyword args passed to logger.info("msg", extra={...})
         for key, val in record.__dict__.items():
             if key not in (
-                "name", "msg", "args", "created", "filename", "funcName",
-                "levelname", "levelno", "lineno", "module", "msecs",
-                "message", "pathname", "process", "processName", "relativeCreated",
-                "stack_info", "thread", "threadName", "exc_info", "exc_text",
+                "name",
+                "msg",
+                "args",
+                "created",
+                "filename",
+                "funcName",
+                "levelname",
+                "levelno",
+                "lineno",
+                "module",
+                "msecs",
+                "message",
+                "pathname",
+                "process",
+                "processName",
+                "relativeCreated",
+                "stack_info",
+                "thread",
+                "threadName",
+                "exc_info",
+                "exc_text",
                 "taskName",
             ):
                 payload[key] = val
@@ -58,11 +75,11 @@ class _StructuredAdapter(logging.LoggerAdapter):
         logger.info("redirect", extra={"short_code": "aB91xK", ...})
     """
 
-    def process(
-        self, msg: str, kwargs: dict[str, Any]
-    ) -> tuple[str, dict[str, Any]]:
+    def process(self, msg: str, kwargs: dict[str, Any]) -> tuple[str, dict[str, Any]]:
         extra = kwargs.pop("extra", {})
-        extra.update({k: v for k, v in kwargs.items() if k not in ("exc_info", "stack_info")})
+        extra.update(
+            {k: v for k, v in kwargs.items() if k not in ("exc_info", "stack_info")}
+        )
         # Remove non-logging kwargs so the base Logger doesn't complain
         for k in list(kwargs):
             if k not in ("exc_info", "stack_info"):
@@ -87,7 +104,9 @@ def configure_logging(json_logs: bool = True, level: str = "INFO") -> None:
 
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(
-        _JSONFormatter() if json_logs else logging.Formatter(
+        _JSONFormatter()
+        if json_logs
+        else logging.Formatter(
             "%(asctime)s %(levelname)-8s %(name)s  %(message)s",
             datefmt="%H:%M:%S",
         )

@@ -1,17 +1,15 @@
-import logging
-import logging.config
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from app.api import redirect, shorten
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
-from app.middleware.timing import RequestTimingMiddleware
 from app.db.base import Base
 from app.db.session import engine
-from app.api import shorten, redirect
+from app.middleware.timing import RequestTimingMiddleware
 
 settings = get_settings()
 
@@ -71,11 +69,16 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error("Unhandled exception processing %s: %s", request.url.path, exc, exc_info=True)
+    logger.error(
+        "Unhandled exception processing %s: %s", request.url.path, exc, exc_info=True
+    )
     return JSONResponse(
         status_code=500,
-        content={"detail": "An internal server error occurred. Please try again later."},
+        content={
+            "detail": "An internal server error occurred. Please try again later."
+        },
     )
+
 
 # ---------------------------------------------------------------------------
 # Health / readiness endpoints (used by ECS / ALB health checks)
@@ -107,6 +110,7 @@ def ready() -> dict:
     ALB marks the task unhealthy if this returns a non-2xx status.
     """
     from sqlalchemy import text
+
     from app.db.session import SessionLocal
 
     try:

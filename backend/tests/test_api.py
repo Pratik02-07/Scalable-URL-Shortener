@@ -4,15 +4,17 @@ Integration tests for the FastAPI endpoints.
 Uses httpx.TestClient (sync) with an in-memory SQLite database and Redis
 mocked out so no external services are needed.
 """
+
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.main import app
 from app.db.base import Base
 from app.db.session import get_db
+from app.main import app
 
 # ── In-memory SQLite for tests ───────────────────────────────────────────────
 TEST_DB_URL = "sqlite:///:memory:"
@@ -37,7 +39,7 @@ app.dependency_overrides[get_db] = override_get_db
 @pytest.fixture(autouse=True)
 def mock_redis():
     mock_client = MagicMock()
-    mock_client.get.return_value = None   # always cache MISS → fall through to DB
+    mock_client.get.return_value = None  # always cache MISS → fall through to DB
     mock_client.set.return_value = True
     mock_client.delete.return_value = 1
     with patch("app.services.cache_service._redis_client", mock_client):
@@ -52,13 +54,16 @@ def client():
 
 # ── Shorten endpoint ─────────────────────────────────────────────────────────
 
+
 def test_shorten_returns_201(client):
     resp = client.post("/api/v1/shorten", json={"url": "https://example.com"})
     assert resp.status_code == 201
     data = resp.json()
     assert "short_code" in data
     assert "short_url" in data
-    assert data["original_url"] == "https://example.com/"  # Pydantic normalises trailing slash
+    assert (
+        data["original_url"] == "https://example.com/"
+    )  # Pydantic normalises trailing slash
 
 
 def test_shorten_custom_alias(client):
@@ -72,7 +77,9 @@ def test_shorten_custom_alias(client):
 
 def test_shorten_duplicate_alias_returns_409(client):
     client.post("/api/v1/shorten", json={"url": "https://a.com", "custom_alias": "dup"})
-    resp = client.post("/api/v1/shorten", json={"url": "https://b.com", "custom_alias": "dup"})
+    resp = client.post(
+        "/api/v1/shorten", json={"url": "https://b.com", "custom_alias": "dup"}
+    )
     assert resp.status_code == 409
 
 
@@ -83,8 +90,11 @@ def test_shorten_invalid_url_returns_422(client):
 
 # ── Redirect endpoint ────────────────────────────────────────────────────────
 
+
 def test_redirect_follows_to_original_url(client):
-    shorten_resp = client.post("/api/v1/shorten", json={"url": "https://fastapi.tiangolo.com"})
+    shorten_resp = client.post(
+        "/api/v1/shorten", json={"url": "https://fastapi.tiangolo.com"}
+    )
     short_code = shorten_resp.json()["short_code"]
 
     # TestClient does NOT follow redirects by default — check 302 + Location header
@@ -100,8 +110,11 @@ def test_redirect_unknown_code_returns_404(client):
 
 # ── Stats endpoint ───────────────────────────────────────────────────────────
 
+
 def test_stats_returns_click_count(client):
-    shorten_resp = client.post("/api/v1/shorten", json={"url": "https://stats-test.com"})
+    shorten_resp = client.post(
+        "/api/v1/shorten", json={"url": "https://stats-test.com"}
+    )
     short_code = shorten_resp.json()["short_code"]
 
     # Simulate 2 clicks
@@ -114,6 +127,7 @@ def test_stats_returns_click_count(client):
 
 
 # ── Health / readiness ───────────────────────────────────────────────────────
+
 
 def test_health_endpoint(client):
     resp = client.get("/health")

@@ -1,11 +1,12 @@
 import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.schemas.url import URLStatsResponse
-from app.services import url_service, cache_service
+from app.services import cache_service, url_service
 
 logger = logging.getLogger(__name__)
 
