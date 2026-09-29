@@ -13,6 +13,7 @@ Usage:
 
 from __future__ import annotations
 
+from collections.abc import MutableMapping
 import json
 import logging
 import sys
@@ -75,7 +76,9 @@ class _StructuredAdapter(logging.LoggerAdapter):
         logger.info("redirect", extra={"short_code": "aB91xK", ...})
     """
 
-    def process(self, msg: str, kwargs: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    def process(
+        self, msg: Any, kwargs: MutableMapping[str, Any]
+    ) -> tuple[Any, MutableMapping[str, Any]]:
         extra = kwargs.pop("extra", {})
         extra.update(
             {k: v for k, v in kwargs.items() if k not in ("exc_info", "stack_info")}

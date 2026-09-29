@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -100,8 +100,8 @@ def health() -> dict:
     return {"status": "ok"}
 
 
-@app.get("/ready", tags=["ops"])
-def ready() -> dict:
+@app.get("/ready", tags=["ops"], response_model=None)
+def ready() -> Response | dict[str, str]:
     """
     Readiness probe — verifies the database is reachable.
 
@@ -117,8 +117,6 @@ def ready() -> dict:
         return {"status": "ready"}
     except Exception as exc:  # noqa: BLE001
         logger.error("Readiness check failed: %s", exc)
-        from fastapi import Response
-
         return Response(content='{"status":"unavailable"}', status_code=503)
 
 

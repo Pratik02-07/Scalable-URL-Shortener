@@ -21,10 +21,10 @@
 > The project demonstrates containerization, CI/CD, infrastructure-as-code, caching, cloud deployment, security, observability, and load testing.
 ---
 
-<img src="Docs/AWSArchitecture.png" alt="Scalable URL Shortener AWS Architecture" />
+<img src="docs/AWSArchitecture.png" alt="Scalable URL Shortener AWS Architecture" />
 
 <br><br>
-<img src="Docs/2.png" alt="Scalable URL Shortener AWS Architecture" />
+<img src="docs/2.png" alt="Scalable URL Shortener AWS Architecture" />
 
 </div>
 
