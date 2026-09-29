@@ -66,6 +66,7 @@ override.tf.json
 .DS_Store
 Thumbs.db
 desktop.ini
+*.log
 
 # ─── Secrets ────────────────────────────────────────────────────────────────
 .env

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
 
@@ -78,6 +78,13 @@ export default function HomePage() {
   const [shortenLoading, setShortenLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const urlRef = useRef<HTMLInputElement>(null);
+  const [currentHost, setCurrentHost] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.host) {
+      setCurrentHost(window.location.host);
+    }
+  }, []);
 
   // Stats
   const [statsCode, setStatsCode] = useState("");
@@ -113,7 +120,12 @@ export default function HomePage() {
         setShortenError(errorMsg);
         return;
       }
-      setResult(await res.json());
+      const data: ShortenResponse = await res.json();
+      const origin = typeof window !== "undefined" && window.location.origin
+        ? window.location.origin
+        : "";
+      const displayUrl = origin ? `${origin}/${data.short_code}` : data.short_url;
+      setResult({ ...data, short_url: displayUrl });
     } catch {
       setShortenError("Could not reach the backend. Is it running?");
     } finally {
@@ -270,7 +282,9 @@ export default function HomePage() {
                     <span className={styles.labelHint}>optional</span>
                   </div>
                   <div className={styles.inputGroup}>
-                    <span className={styles.inputPrefix}>short.ly/</span>
+                    <span className={styles.inputPrefix}>
+                      {currentHost ? `${currentHost}/` : "snaplink.pratikpatil.tech/"}
+                    </span>
                     <input
                       id="alias-input"
                       type="text"
